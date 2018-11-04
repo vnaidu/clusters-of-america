@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+request = "*"
+click = "*"
+pathlib = "*"
+env = "*"
+"beautifulsoup4" = "*"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
+seaborn = "*"
+python-dotenv = "*"
+requests = "*"
+"html5lib" = "*"
+geopy = "*"
+folium = "*"
+sklearn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
