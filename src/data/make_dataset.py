@@ -9,31 +9,31 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 
-def parse_wiki(soup):
-    table_elm = soup.find('table', {'class': 'wikitable sortable'})
+def make_dataset():
+    table_elm
+    return table_cols
 
-    df = None
-    for r in table_elm.tbody.find_all('tr'):
-        if r.th is not None and df is None:
-            print('ok')
-            col_names = [c.text.replace('\n', '') for c in r.findAll('th')]
-            df = list()
-            df.append(col_names)
-        if r.td is not None and df is not None:
-            df.append([c.text.replace('\n', '') for c in r.findAll('td')])
-
-    table_cols = ['pop_rank', 'city', 'state', 'pop_estimate', 'census', 
-                  'pop_delta', 'pop_density__mi', 'pop_density__km2', 
-                  'land_area__mi', 'land_area__km2', 'location']
-    return pd.DataFrame(df[1:], columns=table_cols)
-
+def city_populations(fpath):
+    df = pd.read_csv(fpath)
+    df[['lat', 'long']] = df.pop('location').str.extract(r'([-+]?\d{0,3}\.\d{1,4})\; ([-+]?\d{0,3}\.\d{1,4})', expand=True)
+    df.pop_rank = df.pop_rank.astype(int)
+    df.city = df.city.str.replace(r'\[.+\]', '')
+    df.state = df.state.str.replace(r'\[.+\]', '')
+    df.pop_estimate = df.pop_estimate.str.replace(r'\,', '').astype(int)
+    df.census = df.census.str.replace(r'\,', '').astype(int)
+    df.pop_delta = df.pop_delta.str.extract(r'([+-].+)%', expand=False).str.replace('+', '').astype(float)/100
+    df.pop_density__mi = df.pop_density__mi.str.replace(',', '').str.extract(r'(\d+\.\d+)', expand=False).astype(float)
+    df.pop_density__km2 = df.pop_density__km2.str.replace(',', '').str.extract(r'(\d+\.\d+)', expand=False).astype(float)
+    df.land_area__mi = df.land_area__mi.str.replace(',', '').str.extract(r'(\d+)\/', expand=False).astype(int)
+    df.land_area__km2 = df.land_area__km2.str.replace(',', '').str.extract(r'(\d+)\/', expand=False).astype(int)
+    return df
 
 @click.command()
 @click.argument(
     'input_html',
-    default='../../data/raw/List_of_United_States_cities_by_population',
+    default='../../data/raw/List_of_United_States_cities_by_population.html',
     type=click.Path(exists=True))
-def main(input_html, output_csv):
+def main(input_html):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
